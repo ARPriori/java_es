@@ -1,4 +1,4 @@
-package it.priori;
+package it.priori.parallelSum;
 
 public interface SumArray {
 

@@ -1,17 +1,17 @@
-package it.priori;
+package it.priori.primeNumber;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
 
-        int[] array = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        int[] array = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
 
         int numThreads = 3;
         int segmentLength = array.length / numThreads;
         int remainder = array.length % numThreads;
 
-        AtomicInteger totalSum = new AtomicInteger(0);
+        ArrayList<Integer> allPrimes = new ArrayList<>();
 
         int start = 0;
         for (int i = 0; i < numThreads; i++) {
@@ -22,9 +22,11 @@ public class Main {
                 segment[j - start] = array[j];
             }
 
-            Thread t = new Thread(new SumThread(segment, (segmentSum) -> {
-                totalSum.addAndGet(segmentSum);
-                System.out.println("Somma parziale: " + segmentSum);
+            Thread t = new Thread(new PrimeSearcher(segment, (segmentPrimes) -> {
+                synchronized (allPrimes) {
+                    allPrimes.addAll(segmentPrimes);
+                    System.out.println("Numeri primi parziali: " + segmentPrimes.toString());
+                }
             }));
 
             t.start();
@@ -38,6 +40,6 @@ public class Main {
             e.printStackTrace();
         }
 
-        System.out.println("Somma totale dell'array: " + totalSum.get());
+        System.out.println("Numeri primi nell'array: " + allPrimes.toString());
     }
 }

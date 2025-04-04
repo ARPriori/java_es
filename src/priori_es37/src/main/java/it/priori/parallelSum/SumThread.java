@@ -1,4 +1,4 @@
-package it.priori;
+package it.priori.parallelSum;
 
 public class SumThread implements Runnable {
     private SegmentSum segmentSum = SegmentSum.getInstance();

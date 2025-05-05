@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+.montserrat {
+    font-family: "Montserrat", sans-serif;
+}
+
+.title {
+    color: rgb(113, 55, 128);
+}
+
+.subtitle {
+    font-size: 20px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(10, 30px);
+    margin: 20px;
+    width: max-content;
+}
+
+.cell {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #ccc;
+    text-align: center;
+    line-height: 30px;
+}
+
+.ship {
+    background-color: rgb(252, 222, 252);
+}

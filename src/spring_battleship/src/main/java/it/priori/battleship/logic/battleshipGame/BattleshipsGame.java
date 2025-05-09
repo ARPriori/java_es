@@ -26,12 +26,17 @@ public class BattleshipsGame {
         board2.randomizeShips();
     }
 
+    /**
+     * Computer attacca una cella random del giocatore
+     * 
+     * @return 0 se mancata, 1 se colpita, 2 se affondata
+     */
     public int aiTurn() {
         Random r = new Random(System.currentTimeMillis());
         while (true) {
             try {
                 int result = board1.tryHit(new Node(r.nextInt(10), r.nextInt(10), null));
-                if(board1.hasLost()){
+                if (board1.hasLost()) {
                     endGame();
                 }
                 return result;
@@ -40,15 +45,22 @@ public class BattleshipsGame {
         }
     }
 
+    /**
+     * Giocatore attacca in pos computers
+     * 
+     * @param pos
+     * @return 0 se mancata, 1 se colpita, 2 se affondata
+     * @throws AlreadyHittenException
+     * @throws InvalidPlacementException
+     */
     public int playerTurn(Coordinates pos) throws AlreadyHittenException, InvalidPlacementException {
         int result = board2.tryHit(new Node(pos.getPosx(), pos.getPosy(), null));
-        if(board2.hasLost()){
+        if (board2.hasLost()) {
             endGame();
         }
         return result;
     }
 
-    
     public void resetGame() {
         instance = new BattleshipsGame();
     }

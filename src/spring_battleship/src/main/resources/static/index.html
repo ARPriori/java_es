@@ -14,16 +14,36 @@
 
     <h1 class="title">Battleship Game</h1>
 
+    <div class="game-info">
+        <p>Clicca sul campo del computer per attaccare. Il computer risponderà automaticamente.</p>
+    </div>
+
     <div class="row w-75 m-auto">
-        <div class="col-md-6">
-            <div id="player-grid" class="grid m-auto my-4"></div>
-            <p class="subtitle">Player Field</p>
+        <div class="col-md-2 display-align-center">
+            <button id="my_btns" class="my_btns">Nuova Partita</button>
+            <button id="randomize-ships" class="my_btns">Randomizza Navi</button>
         </div>
 
-        <div class="col-md-6">
-            <div id="computer-grid" class="grid m-auto my-4"></div>
-            <p class="subtitle">Computer Field</p>
+        <div class="col-md-5">
+            <div id="player-grid" class="grid m-auto my-4"></div>
+            <p class="subtitle">Il Tuo Campo</p>
         </div>
+
+        <div class="col-md-5">
+            <div id="computer-grid" class="grid m-auto my-4"></div>
+            <p class="subtitle">Campo del Computer</p>
+        </div>
+    </div>
+
+    <div class="row w-50 m-auto my-4">
+        <div class="col"></div>
+        <div class="col"></div>
+    </div>
+
+
+    <div id="game-phase" style="display: none;">
+        <h3>Fase di Gioco</h3>
+        <button id="reset-game" class="btn btn-secondary">Reset Gioco</button>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>

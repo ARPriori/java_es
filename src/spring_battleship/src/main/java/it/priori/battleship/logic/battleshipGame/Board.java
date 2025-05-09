@@ -45,7 +45,8 @@ public class Board {
     }
 
     /**
-     * Posiziona una barca. Se esce dai bordi rende la posizione iniziale quella finale fino a quando non rientra nei limiti della griglia.
+     * Posiziona una barca. Se esce dai bordi rende la posizione iniziale quella
+     * finale fino a quando non rientra nei limiti della griglia.
      * 
      * @param length     lunghezza della barca
      * @param posx       posizione iniziale sulle ascisse
@@ -54,13 +55,13 @@ public class Board {
      * @throws InvalidPlacementException se la barca si sovrappone a un'altra
      */
     public void placeShip(int length, int posx, int posy, boolean horizontal) throws InvalidPlacementException {
-        
-        //Adjust position if the ship goes out of bounds
-        while((posx + length - 1 > 9 && horizontal) || (posy + length - 1 > 9 && !horizontal)){
+
+        // Adjust position if the ship goes out of bounds
+        while ((posx + length - 1 > 9 && horizontal) || (posy + length - 1 > 9 && !horizontal)) {
             if (horizontal) {
-                posx -= length - 1; 
+                posx -= length - 1;
             } else {
-                posy -= length - 1; 
+                posy -= length - 1;
             }
         }
 
@@ -80,8 +81,6 @@ public class Board {
         ships.add(new Ship(length, posx, posy, horizontal));
     }
 
-    
-    
     /**
      * Mossa: colpisci un nodo e scopri se hai colpito qualcosa
      * 
@@ -90,12 +89,13 @@ public class Board {
      * @throws AlreadyHittenException
      */
     public int tryHit(Node node) throws AlreadyHittenException {
-        if(hittenNodes.contains(node)) throw new AlreadyHittenException("The given coordinates have already been hit");
+        if (hittenNodes.contains(node))
+            throw new AlreadyHittenException("The given coordinates have already been hit");
         hittenNodes.add(node);
         for (Ship s : ships) {
             for (Node n : s.getNodes()) {
                 if (n.equals(node)) {
-                    n.setStatus(nodeStatus.SHIP_HITTEN); 
+                    n.setStatus(nodeStatus.SHIP_HITTEN);
                     node.setStatus(nodeStatus.SHIP_HITTEN);
                     return s.checkStatus(); // Return 1 if hit, 2 if sunk
                 }
@@ -107,7 +107,8 @@ public class Board {
 
     public boolean hasLost() {
         for (Ship s : ships) {
-            if (!s.isSunk()) return false;
+            if (!s.isSunk())
+                return false;
         }
         return true;
     }

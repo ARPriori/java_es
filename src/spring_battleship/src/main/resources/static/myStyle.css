@@ -6,16 +6,18 @@
 
 .title {
     color: rgb(113, 55, 128);
+    margin: 20px 0;
 }
 
 .subtitle {
     font-size: 20px;
+    margin-bottom: 10px;
 }
 
 .grid {
     display: grid;
     grid-template-columns: repeat(10, 30px);
-    margin: 20px;
+    margin: 20px auto;
     width: max-content;
 }
 
@@ -25,8 +27,54 @@
     border: 1px solid #ccc;
     text-align: center;
     line-height: 30px;
+    cursor: pointer;
 }
 
 .ship {
     background-color: rgb(252, 222, 252);
+}
+
+.hit {
+    background-color: rgb(82, 54, 82);
+}
+
+.miss {
+    background-color: #b1d0e7;
+}
+
+.sunk {
+    background-color: #962b2b;
+}
+
+.my_btns {
+    font-size: 1vw;
+    margin: 20px;
+    padding: 10px 20px;
+    background-color: #a57ab6;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: "Montserrat", sans-serif;
+}
+
+.my_btns:hover {
+    background-color: #7a5788;
+}
+
+.game-info {
+    margin: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    font-family: "Montserrat", sans-serif;
+}
+
+#randomize-ships:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.spinner-border {
+    vertical-align: text-top;
 }

@@ -16,18 +16,14 @@ import java.util.stream.Collectors;
 @RequestMapping("/api")
 public class FieldController {
 
-    private BattleshipsGame game = BattleshipsGame.getInstance();
+    private BattleshipsGame game = new BattleshipsGame();
 
     // INIZIALIZZAZIONE
     @GetMapping("/popola-griglie")
     public Map<String, Object> popolaGriglie() {
         Map<String, Object> response = new HashMap<>();
 
-        Board computerBoard = game.getBoard2();
-
-        // Posiziona navi random per giocatore
-        Board playerBoard = game.getBoard1();
-        playerBoard.randomizeShips();
+        Board computerBoard = game.getAiBoard();
 
         // Prepara la risposta
         response.put("computerShips", convertShipsToIndices(computerBoard));
@@ -40,7 +36,7 @@ public class FieldController {
         Map<String, Object> response = new HashMap<>();
 
         // Posiziona navi random per giocatore
-        Board playerBoard = game.getBoard1();
+        Board playerBoard = game.getPlayerBoard();
         playerBoard.randomizeShips();
 
         response.put("playerShips", convertShipsToIndices(playerBoard));
@@ -82,12 +78,11 @@ public class FieldController {
 
             // TURNO GIOCATORE
             int result = game.playerTurn(new Coordinates(x, y));
-
             response.put("hit", result > 0);
             response.put("sunk", result == 2);
 
             // Controlla se il giocatore ha vinto
-            if (game.getBoard2().hasLost()) {
+            if (game.getAiBoard().hasLost()) {
                 response.put("gameOver", true);
                 response.put("winner", "player");
                 return response;
@@ -99,7 +94,7 @@ public class FieldController {
             response.put("computerSunk", computerResult == 2);
 
             // Controlla se il computer ha vinto
-            if (game.getBoard1().hasLost()) {
+            if (game.getPlayerBoard().hasLost()) {
                 response.put("gameOver", true);
                 response.put("winner", "computer");
             }
@@ -112,29 +107,27 @@ public class FieldController {
         }
     }
 
-    // Endpoint per resettare il gioco
     @PostMapping("/reset")
     public Map<String, Object> resetGame() {
-        game.resetGame();
+        game = new BattleshipsGame();
         return Collections.singletonMap("success", true);
     }
 
-    // Endpoint per ottenere lo stato del gioco
     @GetMapping("/stato-gioco")
     public Map<String, Object> getGameState() {
         Map<String, Object> state = new HashMap<>();
 
         // Stato griglia giocatore
-        state.put("playerBoard", convertBoardToMap(game.getBoard1()));
+        state.put("playerBoard", convertBoardToMap(game.getPlayerBoard()));
 
         // Stato griglia computer
-        state.put("computerBoard", convertBoardToMap(game.getBoard2()));
+        state.put("computerBoard", convertBoardToMap(game.getAiBoard()));
 
         // Stato del gioco
-        state.put("gameOver", game.getBoard1().hasLost() || game.getBoard2().hasLost());
-        if (game.getBoard2().hasLost()) {
+        state.put("gameOver", game.getPlayerBoard().hasLost() || game.getAiBoard().hasLost());
+        if (game.getAiBoard().hasLost()) {
             state.put("winner", "player");
-        } else if (game.getBoard1().hasLost()) {
+        } else if (game.getPlayerBoard().hasLost()) {
             state.put("winner", "computer");
         }
 

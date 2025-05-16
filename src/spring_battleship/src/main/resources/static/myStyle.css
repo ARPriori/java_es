@@ -6,7 +6,6 @@
 
 .title {
     color: rgb(113, 55, 128);
-    margin: 20px 0;
 }
 
 .subtitle {
@@ -32,6 +31,10 @@
 
 .ship {
     background-color: rgb(252, 222, 252);
+}
+
+.computer-ship {
+    background-color: none;
 }
 
 .hit {
@@ -60,6 +63,11 @@
 
 .my_btns:hover {
     background-color: #7a5788;
+}
+
+.my_btns:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
 }
 
 .game-info {

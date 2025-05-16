@@ -13,68 +13,78 @@ $(document).ready(function () {
     createEmptyGrid('#player-grid');
     createEmptyGrid('#computer-grid');
 
-    loadGameState();
+    loadGame();
 
-    // Carica lo stato del gioco
-    function loadGameState() {
+    // CARICA GIOCO
+    function loadGame() {
         $.ajax({
             url: '/api/popola-griglie',
             method: 'GET',
             success: function (response) {
+                gameStarted = true;
+
                 // Mostra navi computer (debug)
                 response.computerShips.forEach(ship => {
                     ship.forEach(index => {
-                        $('#computer-grid .cell').eq(index).addClass('ship');
+                        $('#computer-grid .cell').eq(index).addClass('computer-ship');
                     })
                 });
-
-                // Se il gioco è già iniziato, carica lo stato
-                if (response.gameStarted) {
-                    gameStarted = true;
-                    $('#placement-phase').hide();
-                    $('#game-phase').show();
-                    updateGameState();
-                }
             }
         });
     }
 
-
-    // Posiziona navi del giocatore
+    // POSIZIONA NAVI GIOCATORE
     $('#randomize-ships').click(function () {
 
         const button = $(this);
-        button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status"></span> Randomizing...');
+        button.prop('disabled', true);
+
+
+        $('#reset-game').prop('disabled', false);
 
         $.ajax({
             url: '/api/randomizza-player',
             method: 'GET',
             success: function (response) {
                 // Mostra navi player randomizzate
-                response.playerShips.forEach(ship => {
+                response.playerShips.forEach((ship, shipIndex) => {
+                    const shipColor = getShipColor(shipIndex); // Funzione per ottenere il colore della nave
                     ship.forEach(index => {
-                        $('#player-grid .cell').eq(index).addClass('ship');
-                    })
+                        $('#player-grid .cell').eq(index).addClass('ship').css('background-color', shipColor);
+                    });
                 });
 
                 // Aggiorna stato e UI
                 playerShips = response.playerShips.flat();
-                button.text('Randomize Ships');
 
             }, error: function () {
                 alert('Errore durante il posizionamento delle navi');
                 button.prop('disabled', false).text('Randomize Ships');
             }
         })
-
     });
 
-    // Attacca
+    // CREA COLORI NAVI
+    function getShipColor(shipIndex) {
+        const colors = [];
+
+        let val = 222;
+        for (let i = 0; i < 9; i++) {
+            colors[i] = 'rgb(252, ' + val + ', 252)';
+            val -= 10;
+        }
+
+        return colors[shipIndex % colors.length]; // Usa un colore in base all'indice della nave
+    }
+
+    // ATTACCA
     $('#computer-grid').on('click', '.cell', function () {
+
         if (!gameStarted || gameOver) return;
 
-        const index = $(this).data('index');
         const cell = $(this);
+        const index = cell.data('index');
+        console.log("Cella cliccata " + index);
 
         if (cell.hasClass('hit') || cell.hasClass('miss')) {
             return;
@@ -87,32 +97,37 @@ $(document).ready(function () {
                 // Aggiorna griglia computer
                 if (response.hit) {
                     cell.addClass('hit');
+                    $('#gameStatus').text(`Player ha colpito una barca del Computer`);
                     if (response.sunk) {
                         cell.addClass('sunk');
+                        $('#gameStatus').text(`Player ha affondato una barca del Computer`);
                     }
                 } else {
                     cell.addClass('miss');
+                    $('#gameStatus').text(`Player ha missato`);
                 }
 
                 // Aggiorna griglia giocatore (attacco computer)
                 if (response.computerHit !== undefined) {
-                    // Dovresti ricevere le coordinate dell'attacco computer
-                    // e aggiornare la griglia del giocatore
+                    const playerHitCells = $('#player-grid .cell');
+                    response.playerHitIndex && playerHitCells.eq(response.playerHitIndex).addClass(response.computerHit ? 'hit' : 'miss');
                 }
 
                 // Controlla fine gioco
                 if (response.gameOver) {
                     gameOver = true;
-                    alert(`Game Over! Vincitore: ${response.winner}`);
+                    $('#gameStatus').text(`Game Over! Vincitore: ${response.winner}`);
                 }
             },
             error: function (xhr) {
-                alert('Errore: ' + xhr.responseJSON.error);
+                $('#gameStatus').text('Errore: ' + xhr.responseJSON.error).addClass("text-danger");
             }
         });
     });
 
-    // Resetta il gioco
+
+
+    // RESETTA IL GIOCO
     $('#reset-game').click(function () {
         $.ajax({
             url: '/api/reset',
@@ -122,28 +137,4 @@ $(document).ready(function () {
             }
         });
     });
-
-    // Aggiorna lo stato del gioco
-    function updateGameState() {
-        $.ajax({
-            url: '/api/stato-gioco',
-            method: 'GET',
-            success: function (response) {
-                // Aggiorna griglia giocatore
-                response.playerBoard.hitCells.forEach(index => {
-                    $('#player-grid .cell').eq(index).addClass('hit');
-                });
-
-                // Aggiorna griglia computer
-                response.computerBoard.hitCells.forEach(index => {
-                    $('#computer-grid .cell').eq(index).addClass('hit');
-                });
-
-                if (response.gameOver) {
-                    gameOver = true;
-                    alert(`Game Over! Vincitore: ${response.winner}`);
-                }
-            }
-        });
-    }
 });

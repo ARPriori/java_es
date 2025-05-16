@@ -11,12 +11,14 @@ import lombok.Data;
 
 @Data
 public class Board {
-    private List<Node> hittenNodes = new ArrayList<>();
-    private List<Ship> ships = new ArrayList<>();
+    private List<Node> hittenNodes;
+    private List<Ship> ships;
     private boolean hidden;
 
     public Board(boolean hidden) {
         this.hidden = hidden;
+        this.hittenNodes = new ArrayList<>();
+        this.ships = new ArrayList<>();
     }
 
     public void clear() {
@@ -29,9 +31,9 @@ public class Board {
      * randomizzandone posizione e direzione
      */
     public void randomizeShips() {
-        ships.clear();
+        clear();
         int[] shipSizes = { 4, 3, 3, 3, 2, 2, 2, 1, 1 };
-        Random r = new Random(System.currentTimeMillis());
+        Random r = new Random();
         for (int s : shipSizes) {
             boolean placed = false;
             while (!placed) {

@@ -21,7 +21,6 @@ $(document).ready(function () {
             url: '/api/popola-griglie',
             method: 'GET',
             success: function (response) {
-                gameStarted = true;
 
                 // Mostra navi computer (debug)
                 response.computerShips.forEach(ship => {
@@ -56,8 +55,9 @@ $(document).ready(function () {
 
                 // Aggiorna stato e UI
                 playerShips = response.playerShips.flat();
-
-            }, error: function () {
+                gameStarted = true;
+            },
+            error: function () {
                 alert('Errore durante il posizionamento delle navi');
                 button.prop('disabled', false).text('Randomize Ships');
             }
@@ -94,12 +94,11 @@ $(document).ready(function () {
             url: '/api/attacca/' + index,
             method: 'PUT',
             success: function (response) {
-                // Aggiorna griglia computer
+                // Aggiorna griglia computer (attacco giocatore)
                 if (response.hit) {
-                    cell.addClass('hit');
+                    cell.addClass('hit').css('background-color', '');
                     $('#gameStatus').text(`Player ha colpito una barca del Computer`);
                     if (response.sunk) {
-                        cell.addClass('sunk');
                         $('#gameStatus').text(`Player ha affondato una barca del Computer`);
                     }
                 } else {
@@ -108,9 +107,15 @@ $(document).ready(function () {
                 }
 
                 // Aggiorna griglia giocatore (attacco computer)
-                if (response.computerHit !== undefined) {
-                    const playerHitCells = $('#player-grid .cell');
-                    response.playerHitIndex && playerHitCells.eq(response.playerHitIndex).addClass(response.computerHit ? 'hit' : 'miss');
+                if (response.playerHitIndex !== undefined) {
+                    const playerCell = $('#player-grid .cell').eq(response.playerHitIndex);
+                    if (response.computerHit) {
+                        playerCell.addClass('hit');
+                        console.log("Computer ha colpito cella " + response.playerHitIndex);
+                    } else {
+                        playerCell.addClass('miss');
+                        console.log("Computer ha missato cella " + response.playerHitIndex);
+                    }
                 }
 
                 // Controlla fine gioco

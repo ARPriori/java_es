@@ -1,5 +1,7 @@
 package it.priori.battleship.logic.battleshipGame;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import it.priori.battleship.logic.exceptions.AlreadyHittenException;
@@ -11,14 +13,6 @@ public class BattleshipsGame {
 
     private Board playerBoard, aiBoard;
     private int currentPlayer;
-    // private static BattleshipsGame instance;
-
-    // public static BattleshipsGame getInstance() {
-    // if (instance == null) {
-    // instance = new BattleshipsGame();
-    // }
-    // return instance;
-    // }
 
     public BattleshipsGame() {
         playerBoard = new Board(false);
@@ -30,17 +24,24 @@ public class BattleshipsGame {
     /**
      * Computer attacca una cella random del giocatore
      * 
-     * @return 0 se mancata, 1 se colpita, 2 se affondata
+     * @return una mappa con coordinata x (coordX), coordinata y (coordY), e risultato uguale a 0 se mancata, 1 se colpita, 2 se affondata (result)
      */
-    public int aiTurn() {
+    public Map<String, Integer> aiTurn() {
+        int x, y;
+        Map<String, Integer> response = new HashMap<>();
         Random r = new Random(System.currentTimeMillis());
         while (true) {
             try {
-                int result = playerBoard.tryHit(new Node(r.nextInt(10), r.nextInt(10), null));
+                x = r.nextInt(10);
+                y = r.nextInt(10);
+                int result = playerBoard.tryHit(new Node(x, y, null));
                 if (playerBoard.hasLost()) {
                     endGame();
                 }
-                return result;
+                response.put("coordX", x);
+                response.put("coordY", y);
+                response.put("result", result);
+                return response;
             } catch (Exception e) {
             }
         }
@@ -61,10 +62,6 @@ public class BattleshipsGame {
         }
         return result;
     }
-
-    // public void resetGame() {
-    // instance = new BattleshipsGame();
-    // }
 
     public void endGame() {
         aiBoard.setHidden(false);

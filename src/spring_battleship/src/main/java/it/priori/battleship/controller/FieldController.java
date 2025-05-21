@@ -10,7 +10,6 @@ import it.priori.battleship.logic.exceptions.AlreadyHittenException;
 import it.priori.battleship.logic.exceptions.InvalidPlacementException;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -31,6 +30,7 @@ public class FieldController {
         return response;
     }
 
+    //RANDOMIZZAZIONE PLAYER BOARD
     @GetMapping("/randomizza-player")
     public Map<String, Object> randomizzaPlayer() {
         Map<String, Object> response = new HashMap<>();
@@ -44,12 +44,17 @@ public class FieldController {
         return response;
     }
 
+    /**
+     * Crea una lista di interi convertendo le coordinate di ogni barca (cella) in un indice che va da 0 a 99
+     * @param board
+     * @return lista di coordinate in versione di indici (da 0 a 99)
+     */
     private List<List<Integer>> convertShipsToIndices(Board board) {
 
         List<List<Integer>> allShips = new ArrayList<>();
         List<Ship> ships = board.getShips();
 
-        for (Ship ship : ships) {
+        for (Ship ship : ships) { //per ogni barca di board
             List<Integer> singleShip = new ArrayList<>();
 
             for (Node node : ship.getNodes()) {
@@ -66,7 +71,11 @@ public class FieldController {
         return allShips;
     }
 
-    // Endpoint per l'attacco
+    /**
+     * Gestisce l'attaco del computer e del giocatore registrando i vari dati relativi in response (una mappa <String, Object>)
+     * @param index indice della cella attaccata dal player
+     * @return un mappa con: (attacco giocatore) hit e sunk, (attacco computer) computerHit, computerSunk, playerHitIndex, (game over) gameOver [true o false] e winner
+     */
     @PutMapping("/attacca/{index}")
     public Map<String, Object> attacca(@PathVariable int index) {
         Map<String, Object> response = new HashMap<>();
@@ -89,9 +98,13 @@ public class FieldController {
             }
 
             // TURNO COMPUTER
-            int computerResult = game.aiTurn();
+            Map<String, Integer> computerResponse = game.aiTurn();
+            int computerResult = computerResponse.get("result");
+            int attackedIndex = computerResponse.get("coordY")*10 + computerResponse.get("coordX");
+
             response.put("computerHit", computerResult > 0);
             response.put("computerSunk", computerResult == 2);
+            response.put("playerHitIndex", attackedIndex);
 
             // Controlla se il computer ha vinto
             if (game.getPlayerBoard().hasLost()) {
@@ -107,52 +120,11 @@ public class FieldController {
         }
     }
 
+    /**
+     * Resetta il gioco creando una nuova instanza di BattleshipGame
+     */
     @PostMapping("/reset")
-    public Map<String, Object> resetGame() {
+    public void resetGame() {
         game = new BattleshipsGame();
-        return Collections.singletonMap("success", true);
-    }
-
-    @GetMapping("/stato-gioco")
-    public Map<String, Object> getGameState() {
-        Map<String, Object> state = new HashMap<>();
-
-        // Stato griglia giocatore
-        state.put("playerBoard", convertBoardToMap(game.getPlayerBoard()));
-
-        // Stato griglia computer
-        state.put("computerBoard", convertBoardToMap(game.getAiBoard()));
-
-        // Stato del gioco
-        state.put("gameOver", game.getPlayerBoard().hasLost() || game.getAiBoard().hasLost());
-        if (game.getAiBoard().hasLost()) {
-            state.put("winner", "player");
-        } else if (game.getPlayerBoard().hasLost()) {
-            state.put("winner", "computer");
-        }
-
-        return state;
-    }
-
-    private Map<String, Object> convertBoardToMap(Board board) {
-        Map<String, Object> boardMap = new HashMap<>();
-
-        // Celle con navi
-        List<Integer> shipCells = board.getShips().stream()
-                .flatMap(ship -> ship.getNodes().stream())
-                .map(node -> node.getPos().getPosy() * 10 + node.getPos().getPosx())
-                .collect(Collectors.toList());
-
-        // Celle colpite
-        List<Integer> hitCells = board.getHittenNodes().stream()
-                .map(node -> node.getPos().getPosy() * 10 + node.getPos().getPosx())
-                .collect(Collectors.toList());
-
-        boardMap.put("shipCells", shipCells);
-        boardMap.put("hitCells", hitCells);
-        boardMap.put("hidden", board.isHidden());
-        boardMap.put("lost", board.hasLost());
-
-        return boardMap;
     }
 }

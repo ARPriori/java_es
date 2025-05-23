@@ -7,6 +7,7 @@ $(document).ready(function () {
         $(container).empty();
         for (let i = 0; i < 100; i++) {
             $(container).append(`<div class="cell" data-index="${i}"></div>`);
+            $(container).find('.cell').removeClass('hit miss ship computer-ship');
         }
     }
 
@@ -21,6 +22,7 @@ $(document).ready(function () {
             url: '/api/popola-griglie',
             method: 'GET',
             success: function (response) {
+                $('#computer-grid .cell').removeClass('computer-ship');
 
                 // Mostra navi computer (debug)
                 response.computerShips.forEach(ship => {
@@ -138,7 +140,26 @@ $(document).ready(function () {
             url: '/api/reset',
             method: 'POST',
             success: function () {
-                location.reload();
+                // Resetta tutte le variabili di stato
+                gameStarted = false;
+                gameOver = false;
+                playerShips = [];
+
+                // Ricrea le griglie vuote
+                createEmptyGrid('#player-grid');
+                createEmptyGrid('#computer-grid');
+
+                // Ricarica il gioco
+                loadGame();
+
+                // Riabilita il pulsante randomize
+                $('#randomize-ships').prop('disabled', false);
+
+                // Disabilita il pulsante reset finché non si randomizzano le navi
+                $('#reset-game').prop('disabled', true);
+
+                // Resetta il messaggio di stato
+                $('#gameStatus').text('');
             }
         });
     });

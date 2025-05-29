@@ -12,28 +12,27 @@
 
 <body class="montserrat text-center">
 
-    <h1 class="title">Battleship Game</h1>
+    <h1 class="title mt-5 mb-3">Battleship Game</h1>
 
-    <div class="game-info">
-        <p>Clicca sul campo del computer per attaccare. Il computer risponderà automaticamente.</p>
+    <p class="my-3">Clicca sul campo del computer per attaccare. Il computer risponderà automaticamente.</p>
+
+
+    <!-- BOTTONI -->
+    <div class="w-50 m-auto">
+        <button id="reset-game" class="my_btns" disabled>Nuova Partita</button>
+        <button id="randomize-ships" class="my_btns">Randomizza Navi</button>
     </div>
 
     <div class="row w-75 m-auto">
 
-        <!-- BOTTONI -->
-        <div class="col-md-2 display-align-center">
-            <button id="reset-game" class="my_btns" disabled>Nuova Partita</button>
-            <button id="randomize-ships" class="my_btns">Randomizza Navi</button>
-        </div>
-
         <!-- CAMPO GIOCATORE -->
-        <div class="col-md-5">
+        <div class="col-md-6 ">
             <div id="player-grid" class="grid m-auto my-4"></div>
             <p class="subtitle">Il Tuo Campo</p>
         </div>
 
         <!-- CAMPO COMPUTER -->
-        <div class="col-md-5">
+        <div class="col-md-6 ">
             <div id="computer-grid" class="grid m-auto my-4"></div>
             <p class="subtitle">Campo del Computer</p>
         </div>
